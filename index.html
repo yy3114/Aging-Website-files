@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老後變化說明書 - 泌尿系統老化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            width: 100%;
+            max-width: 800px; /* Adjust max-width for single column */
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 1.5rem; /* Add padding to the main container */
+        }
+
+        .main-title {
+            font-size: 2.5rem; /* text-4xl */
+            font-weight: bold;
+            color: #1a202c;
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .image-section {
+            position: relative; /* Crucial for absolute positioning of the image and hotspots */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 1.5rem; /* Space below image */
+        }
+
+        .urinary-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: block; /* Prevents extra space below image */
+            /* Make the image itself the positioning context for hotspots */
+            position: relative;
+            z-index: 1; /* Ensure image is below hotspots if they have background */
+        }
+
+        /* Hotspot divs - these are the new clickable areas */
+        .hotspot {
+            position: absolute;
+            background-color: transparent; /* Invisible by default */
+            cursor: pointer;
+            z-index: 5; /* Above the image */
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+            transition: background-color 0.1s ease-out; /* Smooth hover effect */
+            border-radius: 4px; /* Slight rounding for visual consistency */
+        }
+
+        /* Visual feedback on hover for hotspots */
+        .hotspot:hover {
+            background-color: rgba(66, 153, 225, 0.2); /* Light blue highlight on hover */
+        }
+
+        /* Class to show the yellow overlay when clicked */
+        .hotspot.active-overlay {
+            background-color: rgba(255, 255, 0, 0.4); /* Semi-transparent yellow */
+            border: 2px solid rgba(255, 255, 0, 0.8);
+        }
+
+        /* Initial hint message below the image */
+        .page-hint-message {
+            text-align: left; /* Changed from center to left */
+            color: #666;
+            padding: 1rem 0;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            background-color: #f7fafc;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e0;
+            padding-left: 1rem; /* Add some padding for left alignment */
+            padding-right: 1rem; /* Maintain right padding */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            display: flex; /* Use flex for centering */
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh; /* Max height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling for content */
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: bold;
+            color: #2c5282;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600;
+            color: #4a5568;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .modal-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        .modal-content th, .modal-content td {
+            border: 1px solid #cbd5e0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .modal-content th {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .modal-footer-message { /* Style for "The Pee Press" text */
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            margin-top: 1.5rem; /* Space above this text */
+            margin-bottom: 0.5rem; /* Space below this text */
+        }
+
+        .agency-message {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            margin-top: 0.5rem; /* Reduced margin as "The Pee Press" is above it */
+            padding-top: 0.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="main-container rounded-xl">
+        <h1 class="main-title">老後變化說明書</h1>
+
+        <div class="image-section">
+            <!-- Image of the urinary system -->
+            <img id="urinaryImage" src="https://i.postimg.cc/9FMppw6L/Collage-2025-07-20-21-24-16.jpg" alt="泌尿系統圖" class="urinary-image" onerror="this.onerror=null;this.src='https://placehold.co/600x400/E2E8F0/A0AEC0?text=Urinary+System+Image';">
+
+            <!-- Hotspot divs - these are the new clickable areas -->
+            <!-- Positioned absolutely relative to the .urinary-image -->
+            <!-- Coords are percentage-based for responsiveness -->
+            <div class="hotspot" id="kidneyHotspot" data-organ="kidney"
+                 style="left: 60%; top: 10%; width: 30%; height: 30%;"></div>
+
+            <!-- Ureter Hotspot - Optimized for click success -->
+            <div class="hotspot" id="ureterHotspot" data-organ="ureter"
+                 style="left: 40%; top: 30%; width: 20%; height: 50%;"></div>
+
+            <!-- Bladder Hotspot - Optimized for click success -->
+            <div class="hotspot" id="bladderHotspot" data-organ="bladder"
+                 style="left: 40%; top: 65%; width: 20%; height: 25%;"></div>
+
+            <!-- Urethra Hotspot - Adjusted significantly inwards and up -->
+            <div class="hotspot" id="urethraHotspot" data-organ="urethra"
+                 style="left: 47%; top: 85%; width: 6%; height: 10%;"></div>
+
+            <!-- Prostate Hotspot - Positioned below the bladder -->
+            <div class="hotspot" id="prostateHotspot" data-organ="prostate"
+                 style="left: 47%; top: 80%; width: 6%; height: 8%;"></div>
+
+        </div>
+
+        <!-- Initial hint message below the image -->
+        <div class="page-hint-message">
+            <p>請點擊圖片中的器官，以查看其老化的生理與病理現象。**男性請注意：攝護腺位於膀胱正下方，點擊該區域可查看相關資訊。**</p>
+        </div>
+
+        <!-- The Info Modal Structure - Appears when clicking an organ -->
+        <div id="infoModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle"></h2>
+                <div id="modalContent">
+                    <!-- Content will be loaded here by JavaScript -->
+                </div>
+                <p class="modal-footer-message">The Pee Press</p>
+                <p class="agency-message">1號通訊社關心您</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for each organ's aging phenomena
+        const organData = {
+            kidney: {
+                title: "腎臟老化",
+                physiology: `
+                    <h3>生理學變化：</h3>
+                    <ul>
+                        <li>腎血流量下降（每10年約減少10%），特別是腎皮質血流。</li>
+                        <li>腎絲球過濾率（GFR）下降，平均每年約下降1 mL/min/1.73m&sup2;。</li>
+                        <li>腎單位數量減少，約30～50%的腎小球在80歲前會硬化。</li>
+                        <li>濃縮與稀釋尿液的能力減弱，易出現低血鈉或脫水。</li>
+                    </ul>
+                `,
+                pathology: `
+                    <h3>病理學機轉：</h3>
+                    <ul>
+                        <li>血管性變化：腎小動脈硬化，導致缺血與腎小球硬化；微血管病變降低過濾功能與修復能力。</li>
+                        <li>細胞與基質改變：腎小球基底膜增厚、間質纖維化；氧化壓力與慢性發炎（inflamm-aging）加速腎單位凋亡。</li>
+                    </ul>
+                    <h3>相關疾病：</h3>
+                    <table class="min-w-full bg-white rounded-lg shadow overflow-hidden mb-4">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 bg-gray-100 text-gray-700 uppercase text-sm leading-normal">疾病</th>
+                                <th class="py-3 px-4 bg-gray-100 text-gray-700 uppercase text-sm leading-normal">特徵</th>
+                                <th class="py-3 px-4 bg-gray-100 text-gray-700 uppercase text-sm leading-normal">備註</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-3 px-4">慢性腎臟病（CKD）</td>
+                                <td class="py-3 px-4">eGFR下降、蛋白尿</td>
+                                <td class="py-3 px-4">高齡為風險因子，與高血壓糖尿病共病</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4">藥物性腎損傷</td>
+                                <td class="py-3 px-4">使用NSAIDs等藥物導致腎損傷</td>
+                                <td class="py-3 px-4">需注意腎毒性藥物劑量</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4">電解質失衡</td>
+                                <td class="py-3 px-4">常見低血鈉、低血鉀</td>
+                                <td class="py-3 px-4">因口渴感與調節失常</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            ureter: {
+                title: "輸尿管老化",
+                physiology: `
+                    <h3>生理學變化：</h3>
+                    <ul>
+                        <li>輸尿管平滑肌的蠕動功能可能隨年齡增長而略有下降，但通常影響不明顯。</li>
+                        <li>結締組織比例可能增加，彈性略減。</li>
+                    </ul>
+                `,
+                pathology: `
+                    <h3>病理學機轉：</h3>
+                    <ul>
+                        <li>雖然輸尿管本身老化引起的病理變化較少，但其功能常受上游腎臟或下游膀胱問題影響。</li>
+                        <li>例如，腎結石或前列腺肥大導致的尿液回流會對輸尿管造成壓力。</li>
+                    </ul>
+                `
+            },
+            bladder: {
+                title: "膀胱老化",
+                physiology: `
+                    <h3>生理學變化：</h3>
+                    <ul>
+                        <li>膀胱容量減少（由600 ml降至250–400 ml）。</li>
+                        <li>逼尿肌收縮力下降，導致排尿不完全與殘尿增加。</li>
+                        <li>夜間尿液產生增加，常見夜尿。</li>
+                        <li>肌肉結構變化：平滑肌纖維萎縮，結締組織比例上升，導致膀胱壁彈性變差；肌纖維排列不規則，肌間神經分布減少。</li>
+                        <li>神經調控下降：副交感神經反射弧效率變差，導致逼尿肌收縮遲鈍；感覺神經敏感度下降，膀胱充盈感不明顯。</li>
+                        <li>逼尿肌最大收縮壓力下降，導致殘尿量增加、排尿不完全。</li>
+                        <li>過度活動或不協調現象：有些長者會產生逼尿肌過度活動，出現急尿、頻尿、夜尿；或是逼尿肌與括約肌協調失調，增加排尿阻力。</li>
+                    </ul>
+                `,
+                pathology: `
+                    <h3>功能性影響（臨床觀察）：</h3>
+                    <table class="min-w-full bg-white rounded-lg shadow overflow-hidden mb-4">
+                        <thead>
+                            <tr>
+                                <th class="py-3 px-4 bg-gray-100 text-gray-700 uppercase text-sm leading-normal">老化後的變化</th>
+                                <th class="py-3 px-4 bg-gray-100 text-gray-700 uppercase text-sm leading-normal">對膀胱功能的影響</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-3 px-4">逼尿肌收縮力下降</td>
+                                <td class="py-3 px-4">排尿遲緩或滴尿</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4">逼尿肌反射遲鈍</td>
+                                <td class="py-3 px-4">延遲排尿感，甚至需用腹壓輔助</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4">過度活動</td>
+                                <td class="py-3 px-4">急尿、尿失禁</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4">逼尿肌疲乏或低活動</td>
+                                <td class="py-3 px-4">尿瀦留、反覆泌尿道感染</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3>相關臨床表現與常見疾病：</h3>
+                    <ul>
+                        <li>
+                            <span class="font-semibold">逼尿肌過度活動（Detrusor overactivity）：</span>
+                            <ul class="list-circle pl-5">
+                                <li>原因：膀胱壁重塑與神經調控異常。</li>
+                                <li>症狀：急尿、頻尿、夜尿、急迫性尿失禁。</li>
+                                <li>診斷：尿流動力學檢查發現非自主收縮。</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="font-semibold">逼尿肌低活動或無活動（Detrusor underactivity）：</span>
+                            <ul class="list-circle pl-5">
+                                <li>原因：神經退化、糖尿病、慢性尿瀦留。</li>
+                                <li>症狀：排尿困難、需用腹壓、殘尿多。</li>
+                                <li>併發：反覆UTI、膀胱結石、腎水腫。</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="font-semibold">逼尿肌-括約肌不協調：</span>
+                            <ul class="list-circle pl-5">
+                                <li>常見於中風、帕金森病或脊髓損傷患者。</li>
+                                <li>排尿時括約肌無法同步放鬆，導致高壓膀胱。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                `
+            },
+            urethra: {
+                title: "尿道與括約肌老化",
+                physiology: `
+                    <h3>生理學變化：</h3>
+                    <ul>
+                        <li>女性尿道黏膜變薄、括約肌張力下降（與雌激素減少有關）。</li>
+                        <li>男性因前列腺肥大導致尿道阻力增加。</li>
+                    </ul>
+                `,
+                pathology: `
+                    <h3>相關疾病：</h3>
+                    <ul>
+                        <li>排尿功能障礙：
+                            <ul>
+                                <li>急迫性尿失禁：尿意強烈難以控制，女性常見，與逼尿肌過動有關。</li>
+                                <li>功能性尿失禁：因行動或認知障礙導致排尿困難，失智或行動障礙者常見。</li>
+                                <li>前列腺肥大：男性排尿困難、尿瀦留，可導致急性尿滯留或反覆UTI。</li>
+                            </ul>
+                        </li>
+                        <li>泌尿道感染（UTI）：
+                            <ul>
+                                <li>單純性膀胱炎：頻尿、尿痛、急尿，女性常見，與陰道萎縮有關。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                `
+            },
+            prostate: {
+                title: "攝護腺老化",
+                physiology: `
+                    <h3>生理學變化：</h3>
+                    <ul>
+                        <li>攝護腺體積隨年齡增長而增大。</li>
+                        <li>腺體組織中的間質和上皮細胞增生。</li>
+                        <li>尿道受壓迫，導致尿道阻力增加。</li>
+                    </ul>
+                `,
+                pathology: `
+                    <h3>相關疾病：</h3>
+                    <ul>
+                        <li>
+                            <span class="font-semibold">良性攝護腺增生（Benign Prostatic Hyperplasia, BPH）：</span>
+                            <ul class="list-circle pl-5">
+                                <li>原因：男性荷爾蒙變化及老化。</li>
+                                <li>症狀：頻尿、夜尿、排尿困難、尿流變細、排尿不完全感。</li>
+                                <li>併發症：急性尿滯留、反覆泌尿道感染、膀胱結石、腎功能受損。</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="font-semibold">攝護腺癌（Prostate Cancer）：</span>
+                            <ul class="list-circle pl-5">
+                                <li>高齡是主要風險因子之一。</li>
+                                <li>早期通常無症狀，晚期可能出現排尿困難、骨痛等。</li>
+                                <li>需定期篩檢（如PSA檢查）。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                `
+            }
+        };
+
+        // Get modal elements
+        const infoModal = document.getElementById('infoModal');
+        const modalTitle = infoModal.querySelector('#modalTitle');
+        const modalContent = infoModal.querySelector('#modalContent');
+
+        // Function to open the organ info modal
+        function openModal(organ) {
+            const data = organData[organ];
+            if (data) {
+                // Remove '老化' from the title if it exists, then append '老化資訊'
+                const cleanTitle = data.title.replace('老化', '');
+                modalTitle.textContent = cleanTitle + "老化資訊";
+                modalContent.innerHTML = `
+                    ${data.physiology}
+                    ${data.pathology}
+                `;
+                infoModal.style.display = 'flex'; // Show the info modal
+
+                // Show the click overlay on the clicked hotspot
+                const clickedHotspot = document.getElementById(organ + 'Hotspot');
+                if (clickedHotspot) {
+                    // Remove active-overlay from any previously clicked hotspot
+                    document.querySelectorAll('.hotspot').forEach(hs => hs.classList.remove('active-overlay'));
+                    // Add active-overlay to the current one
+                    clickedHotspot.classList.add('active-overlay');
+                }
+
+            } else {
+                // Fallback for debugging
+                modalTitle.textContent = "泌尿系統老化資訊";
+                modalContent.innerHTML = `<p>點擊器官呈現詳細內容。</p>`;
+                infoModal.style.display = 'flex';
+            }
+        }
+
+        // Function to close the organ info modal
+        function closeModal() {
+            infoModal.style.display = 'none'; // Hide the info modal
+            // Hide the click overlay
+            document.querySelectorAll('.hotspot').forEach(hs => hs.classList.remove('active-overlay'));
+        }
+
+        // Close any modal if the user clicks anywhere outside of its content
+        window.onclick = function(event) {
+            if (event.target == infoModal) {
+                closeModal();
+            }
+        }
+
+        // Attach click listeners to hotspots
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.hotspot').forEach(hotspot => {
+                hotspot.addEventListener('click', () => {
+                    const organ = hotspot.dataset.organ;
+                    openModal(organ);
+                });
+            });
+        });
+
+        // With absolute positioning and percentages, no complex JS scaling is needed for hotspots.
+        // The browser handles the responsiveness naturally.
+    </script>
+</body>
+</html>
+
