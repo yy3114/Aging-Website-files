@@ -95,6 +95,27 @@
             padding-right: 1rem; /* Maintain right padding */
         }
 
+        /* New button style - applied to the "老化面面觀" button */
+        .action-button {
+            display: block; /* Make it a block element to take full width */
+            margin: 1.5rem auto 0 auto; /* Center the button and add top margin */
+            padding: 0.75rem 1.5rem;
+            background-color: #8B4513; /* Brown color - SaddleBrown */
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: fit-content; /* Adjust width to content */
+        }
+
+        .action-button:hover {
+            background-color: #A0522D; /* Darker brown on hover - Sienna */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+
         /* Modal Styles */
         .modal {
             display: none; /* Hidden by default */
@@ -204,6 +225,31 @@
             border-top: 1px solid #e2e8f0;
         }
 
+        /* Specific styles for the new "Aspects of Aging" modal content */
+        #aspectsModal h3 {
+            font-size: 1.35rem; /* Slightly larger for main categories */
+            color: #2c5282;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #cbd5e0;
+            padding-bottom: 0.5rem;
+        }
+        #aspectsModal ul {
+            list-style-type: circle;
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        #aspectsModal li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* Style for the horizontal rule in aspects modal */
+        #aspectsModal hr {
+            border: none;
+            border-top: 1px dashed #cbd5e0;
+            margin: 2rem 0;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -247,6 +293,9 @@
             <p>請點擊圖片中的器官，以查看其老化的生理與病理現象。**男性請注意：攝護腺位於膀胱正下方，點擊該區域可查看相關資訊。**</p>
         </div>
 
+        <!-- NEW: "老化面面觀" button on the main page, below the hint -->
+        <button class="action-button" onclick="openAspectsModal()">老化面面觀</button>
+
         <!-- The Info Modal Structure - Appears when clicking an organ -->
         <div id="infoModal" class="modal">
             <div class="modal-content">
@@ -257,6 +306,17 @@
                 </div>
                 <p class="modal-footer-message">The Pee Press</p>
                 <p class="agency-message">1號通訊社關心您</p>
+            </div>
+        </div>
+
+        <!-- New Modal for "老化面面觀" -->
+        <div id="aspectsModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeAspectsModal()">&times;</span>
+                <h2 class="text-2xl font-bold text-center text-blue-700 mb-4">老化面面觀</h2>
+                <div id="aspectsContent">
+                    <!-- Content will be loaded by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -458,10 +518,51 @@
             }
         };
 
+        // Content for the "Aspects of Aging" modal
+        const aspectsOfAgingContent = `
+            <h3>🔬 生理層面（Biological Aging）</h3>
+            <ul>
+                <li>細胞老化（Senescence）：細胞失去分裂能力，影響組織修復與免疫。</li>
+                <li>賀爾蒙變化：例如睪固酮或雌激素下降，影響肌肉、骨質密度、情緒等。</li>
+                <li>器官功能衰退：心肺功能下降、腎功能減退、腸胃蠕動變慢等。</li>
+                <li>神經退化：如認知功能減退、記憶力下降。</li>
+            </ul>
+
+            <hr>
+
+            <h3>🧠 心理層面（Psychological Aging）</h3>
+            <ul>
+                <li>認知功能：例如注意力、學習力、短期記憶可能會逐漸下降。</li>
+                <li>情緒變化：可能出現孤獨、焦慮或憂鬱，尤其是退休後、喪偶後。</li>
+                <li>適應力：有些人能積極面對老化，發展新的生活目標或人際關係。</li>
+            </ul>
+
+            <hr>
+
+            <h3>👥 社會與文化層面（Social & Cultural Aging）</h3>
+            <ul>
+                <li>角色轉變：從勞動者、照顧者轉變為被照顧者。</li>
+                <li>社會觀感：老化常與「退化」「沒用」畫上等號，但也可以是「智慧的累積」「傳承」的象徵。</li>
+                <li>政策與醫療：長照、退休制度、老年友善社區等，都是回應人口老化的挑戰。</li>
+            </ul>
+
+            <hr>
+
+            <h3>🤔 哲學與人文層面（Aging and Meaning）</h3>
+            <ul>
+                <li>生命意義感：年老是否等於價值降低？還是代表一種人生完成？</li>
+                <li>老年美學：皺紋、白髮是否也能是一種美？</li>
+                <li>死亡與準備：老化讓我們更貼近終點，也許更有機會思考「怎麼好好活」。</li>
+            </ul>
+        `;
+
         // Get modal elements
         const infoModal = document.getElementById('infoModal');
         const modalTitle = infoModal.querySelector('#modalTitle');
         const modalContent = infoModal.querySelector('#modalContent');
+
+        const aspectsModal = document.getElementById('aspectsModal');
+        const aspectsContent = document.getElementById('aspectsContent');
 
         // Function to open the organ info modal
         function openModal(organ) {
@@ -500,10 +601,23 @@
             document.querySelectorAll('.hotspot').forEach(hs => hs.classList.remove('active-overlay'));
         }
 
+        // Function to open the "Aspects of Aging" modal
+        function openAspectsModal() {
+            aspectsContent.innerHTML = aspectsOfAgingContent; // Set the content
+            aspectsModal.style.display = 'flex'; // Show the aspects modal
+        }
+
+        // Function to close the "Aspects of Aging" modal
+        function closeAspectsModal() {
+            aspectsModal.style.display = 'none'; // Hide the aspects modal
+        }
+
         // Close any modal if the user clicks anywhere outside of its content
         window.onclick = function(event) {
             if (event.target == infoModal) {
                 closeModal();
+            } else if (event.target == aspectsModal) {
+                closeAspectsModal();
             }
         }
 
